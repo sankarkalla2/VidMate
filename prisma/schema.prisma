@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextIndex", "fullTextSearch"]
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
+  relationMode = "prisma"
+}
+
+model Channel {
+  id       String     @id @unique @default(uuid())
+  userId   String     @unique
+  name     String?
+  video    Video[]
+  Comments Comments[]
+}
+
+model Video {
+  id          String     @id @unique @default(uuid())
+  title       String
+  description String?
+  imgUrl      String?
+  vidUrl      String?
+  channleId   String
+  isPublished Boolean    @default(false)
+  channel     Channel    @relation(fields: [channleId], references: [id], onDelete: Cascade)
+  categoryId  String?
+  category    Category?  @relation(fields: [categoryId], references: [id])
+  comments    Comments[]
+  MuxData     MuxData?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([channleId])
+  @@index([categoryId])
+}
+
+model Comments {
+  id        String   @id @unique @default(uuid())
+  userId    String
+  title     String
+  channelId String
+  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  Video     Video    @relation(fields: [videoId], references: [id])
+  videoId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([channelId])
+  @@index([videoId])
+}
+
+model Category {
+  id    String  @id @unique @default(uuid())
+  name  String  @unique
+  video Video[]
+}
+
+model MuxData {
+  id         String   @id @unique @default(uuid())
+  assetId    String
+  playbackId String?
+  videoId    String   @unique
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

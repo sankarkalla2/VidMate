@@ -5,6 +5,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
             <Navbar />
           </div>
           <main className="md:ml-52 p-2">{children}</main>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
